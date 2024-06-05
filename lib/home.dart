@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'testimonial.dart';
+import 'legalisasi_dokumen.dart';
+import 'tahapan_proses.dart';
+import 'testimonial.dart'; // Import the shared testimonial section
 
 class HomePage extends StatelessWidget {
   final bool showSnackbar;
@@ -63,54 +65,37 @@ class HomePage extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  infoCard(
-                    'assets/images/tanah.jpeg',
-                    'Legalisasi Dokumen',
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => LegalisasiDokumenPage()),
+                      );
+                    },
+                    child: infoCard(
+                      'assets/images/tanah.jpeg',
+                      'Legalisasi Dokumen',
+                    ),
                   ),
                   SizedBox(width: 10),
-                  infoCard(
-                    'assets/images/tanah2.webp',
-                    'Tahapan Proses Jual Beli Tanah',
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => TahapanProsesPage()),
+                      );
+                    },
+                    child: infoCard(
+                      'assets/images/tanah2.webp',
+                      'Tahapan Proses Jual Beli Tanah',
+                    ),
                   ),
                 ],
               ),
               SizedBox(height: 20),
 
-              // Info Cards
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  infoCard(
-                    'assets/images/tanah.jpeg',
-                    'Legalisasi Dokumen',
-                  ),
-                  SizedBox(width: 10),
-                  infoCard(
-                    'assets/images/tanah2.webp',
-                    'Tahapan Proses Jual Beli Tanah',
-                  ),
-                ],
-              ),
-              SizedBox(height: 20),
-
-              // Testimonial Button
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) =>
-                            TestimonialPage()), // Navigasi ke halaman testimoni
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                child: Text('Testimonial'),
-              ),
+              // Testimonial Section
+              TestimonialSection(),
               SizedBox(height: 20),
             ],
           ),

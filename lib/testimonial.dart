@@ -1,90 +1,191 @@
 import 'package:flutter/material.dart';
 
-class TestimonialPage extends StatelessWidget {
+class TestimonialSection extends StatefulWidget {
+  final bool allowDelete;
+
+  TestimonialSection({this.allowDelete = false});
+
+  @override
+  _TestimonialSectionState createState() => _TestimonialSectionState();
+}
+
+class _TestimonialSectionState extends State<TestimonialSection> {
+  final List<Map<String, String>> testimonials = [
+    {
+      'name': 'Arepp',
+      'testimonial': 'Pelayanan sangat memuaskan dan profesional!',
+      'imagePath': 'assets/images/kita.jpeg',
+    },
+    {
+      'name': 'Wall',
+      'testimonial': 'Proses cepat dan mudah, sangat direkomendasikan!',
+      'imagePath': 'assets/images/kita.jpeg',
+    },
+    {
+      'name': 'Predo',
+      'testimonial': 'Pengalaman yang luar biasa!',
+      'imagePath': 'assets/images/kita.jpeg',
+    },
+  ];
+
+  void _addTestimonial(String name, String testimonial, String imagePath) {
+    setState(() {
+      testimonials.add({
+        'name': name,
+        'testimonial': testimonial,
+        'imagePath': imagePath,
+      });
+    });
+  }
+
+  void _removeTestimonial(int index) {
+    setState(() {
+      testimonials.removeAt(index);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Testimoni Pelanggan'),
-      ),
-      body: Center(
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              testimonialContainer(
-                image: 'assets/images/kita.jpeg',
-                testimonial: 'Pelayananannya ramah dan cepat, "recommended".',
-                author: '- Budi Hartono, PT. Abadi Jaya',
-              ),
-              SizedBox(height: 20),
-              testimonialContainer(
-                image: 'assets/images/kita.jpeg',
-                testimonial:
-                    'Kami sudah melakukan kerjasama lebih dari 4 tahun, selama kerjasama tidak pernah mengecewakan dalam pengurusan sertifikat jual beli properti, terimakasih pa ari.',
-                author: '- Raharjo',
-              ),
-              SizedBox(height: 20),
-              testimonialContainer(
-                image: 'assets/images/kita.jpeg',
-                testimonial: 'Mantap bagus pelayanan, good rating 9/10',
-                author: '- John Doe',
-              ),
-            ],
-          ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Text(
+          'Testimonial',
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          textAlign: TextAlign.center,
         ),
-      ),
+        SizedBox(height: 20),
+        ListView.builder(
+          shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
+          itemCount: testimonials.length,
+          itemBuilder: (context, index) {
+            return TestimonialCard(
+              name: testimonials[index]['name']!,
+              testimonial: testimonials[index]['testimonial']!,
+              imagePath: testimonials[index]['imagePath']!,
+              onDelete: widget.allowDelete ? () => _removeTestimonial(index) : null,
+            );
+          },
+        ),
+        SizedBox(height: 20),
+        ElevatedButton(
+          onPressed: () {
+            _showAddTestimonialDialog(context);
+          },
+          child: Text('Tambah Testimonial'),
+        ),
+      ],
     );
   }
 
-  Widget testimonialContainer({
-    required String image,
-    required String testimonial,
-    required String author,
-  }) {
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.all(20),
-      margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(15),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.5),
-            spreadRadius: 2,
-            blurRadius: 7,
-            offset: Offset(0, 3),
+  void _showAddTestimonialDialog(BuildContext context) {
+    final nameController = TextEditingController();
+    final testimonialController = TextEditingController();
+    final imagePathController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Tambah Testimonial'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: nameController,
+                decoration: InputDecoration(labelText: 'Nama'),
+              ),
+              TextField(
+                controller: testimonialController,
+                decoration: InputDecoration(labelText: 'Testimonial'),
+              ),
+              TextField(
+                controller: imagePathController,
+                decoration: InputDecoration(labelText: 'Gambar'),
+              ),
+            ],
           ),
-        ],
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          CircleAvatar(
-            backgroundImage: AssetImage(image),
-            radius: 30,
-          ),
-          SizedBox(width: 20),
-          Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(
-                  testimonial,
-                  style: TextStyle(fontSize: 16),
-                ),
-                SizedBox(height: 5),
-                Text(
-                  author,
-                  style: TextStyle(fontStyle: FontStyle.italic),
-                ),
-              ],
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Batal'),
             ),
-          ),
-        ],
+            TextButton(
+              onPressed: () {
+                _addTestimonial(
+                  nameController.text,
+                  testimonialController.text,
+                  imagePathController.text,
+                );
+                Navigator.of(context).pop();
+              },
+              child: Text('Tambah'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class TestimonialCard extends StatelessWidget {
+  final String name;
+  final String testimonial;
+  final String imagePath;
+  final VoidCallback? onDelete;
+
+  TestimonialCard({
+    required this.name,
+    required this.testimonial,
+    required this.imagePath,
+    this.onDelete,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 5,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Row(
+          children: [
+            CircleAvatar(
+              backgroundImage: AssetImage(imagePath),
+              radius: 30,
+            ),
+            SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    name,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                  SizedBox(height: 5),
+                  Text(
+                    testimonial,
+                    style: TextStyle(fontSize: 14),
+                  ),
+                ],
+              ),
+            ),
+            if (onDelete != null)
+              IconButton(
+                icon: Icon(Icons.delete, color: Colors.red),
+                onPressed: onDelete,
+              ),
+          ],
+        ),
       ),
     );
   }
